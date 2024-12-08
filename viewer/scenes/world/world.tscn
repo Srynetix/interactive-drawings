@@ -1,0 +1,223 @@
+[gd_scene load_steps=23 format=3 uid="uid://c5s6prg7y5m3t"]
+
+[ext_resource type="Script" path="res://scenes/world/world.gd" id="1_cfxun"]
+[ext_resource type="PackedScene" uid="uid://wpfrc251ct6a" path="res://assets/meshes/world/wip.glb" id="2_bpycf"]
+[ext_resource type="Shader" path="res://scenes/world/water.gdshader" id="3_kldk5"]
+[ext_resource type="PackedScene" uid="uid://bq4xk72fedr0q" path="res://scenes/tree/tree.tscn" id="4_ywse3"]
+[ext_resource type="PackedScene" uid="uid://duwvsvhvl6ddj" path="res://scenes/fps-camera/fps-camera.tscn" id="5_4ktki"]
+[ext_resource type="Script" path="res://scenes/following-camera/following-camera.gd" id="6_ihcgg"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_tgesu"]
+
+[sub_resource type="Sky" id="Sky_863ju"]
+sky_material = SubResource("ProceduralSkyMaterial_tgesu")
+
+[sub_resource type="Environment" id="Environment_emdxl"]
+background_mode = 2
+sky = SubResource("Sky_863ju")
+ambient_light_source = 3
+reflected_light_source = 2
+fog_enabled = true
+fog_mode = 1
+fog_light_color = Color(0.806311, 0.650243, 0.854189, 1)
+fog_density = 1.5
+volumetric_fog_density = 0.044
+
+[sub_resource type="Curve" id="Curve_g1t34"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.508299, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_bk7et"]
+curve = SubResource("Curve_g1t34")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_r6iqi"]
+emission_shape = 3
+emission_box_extents = Vector3(50, 5, 50)
+direction = Vector3(0, -1, 0)
+spread = 0.0
+gravity = Vector3(0, -0.1, 0)
+alpha_curve = SubResource("CurveTexture_bk7et")
+hue_variation_min = -0.26
+hue_variation_max = 0.23
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_huwp5"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+
+[sub_resource type="SphereMesh" id="SphereMesh_3xaim"]
+material = SubResource("StandardMaterial3D_huwp5")
+radius = 0.1
+height = 0.2
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_j7u1s"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_og8o5"]
+noise = SubResource("FastNoiseLite_j7u1s")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_hptab"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_bews1"]
+noise = SubResource("FastNoiseLite_hptab")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_osnm7"]
+render_priority = 0
+shader = ExtResource("3_kldk5")
+shader_parameter/beer_factor = 0.8
+shader_parameter/foam_distance = 0.01
+shader_parameter/foam_max_distance = 0.4
+shader_parameter/foam_min_distance = 0.04
+shader_parameter/foam_color = Color(1, 1, 1, 1)
+shader_parameter/surface_noise_tiling = Vector2(1, 4)
+shader_parameter/surface_noise_scroll = Vector3(0.03, 0.03, 0)
+shader_parameter/surface_noise_cutoff = 0.777
+shader_parameter/surface_distortion_amount = 0.27
+shader_parameter/_DepthGradientShallow = Color(0.325, 0.807, 0.971, 0.725)
+shader_parameter/_DepthGradientDeep = Color(0.086, 0.407, 1, 0.749)
+shader_parameter/_DepthMaxDistance = 1.0
+shader_parameter/_DepthFactor = 1.0
+shader_parameter/surfaceNoise = SubResource("NoiseTexture2D_bews1")
+shader_parameter/distortNoise = SubResource("NoiseTexture2D_og8o5")
+
+[sub_resource type="BoxMesh" id="BoxMesh_72yao"]
+material = SubResource("ShaderMaterial_osnm7")
+size = Vector3(39.65, 0.1, 62.77)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_lejm0"]
+size = Vector3(39.65, 0.1, 62.77)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ys4lo"]
+size = Vector3(102.328, 1, 101.629)
+
+[node name="World" type="Node3D"]
+script = ExtResource("1_cfxun")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_emdxl")
+
+[node name="Light" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.992542, 0.0704379, -0.0994943, -0.121904, -0.573505, 0.810081, 8.70067e-09, 0.816168, 0.577815, 0, 15.6139, 0)
+light_color = Color(0.88057, 0.784439, 0.962744, 1)
+light_energy = 0.353
+shadow_enabled = true
+
+[node name="Ground" parent="." instance=ExtResource("2_bpycf")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
+
+[node name="Stars" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.14079, 0)
+amount = 800
+lifetime = 10.0
+preprocess = 10.0
+visibility_aabb = AABB(-50, -10, -50, 100, 25, 100)
+local_coords = true
+process_material = SubResource("ParticleProcessMaterial_r6iqi")
+draw_pass_1 = SubResource("SphereMesh_3xaim")
+
+[node name="Water" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.5686, -0.321273, -9.94593)
+gravity_space_override = 1
+gravity = 1.0
+linear_damp_space_override = 3
+linear_damp = 1.0
+
+[node name="Water" type="MeshInstance3D" parent="Water"]
+mesh = SubResource("BoxMesh_72yao")
+skeleton = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Water"]
+shape = SubResource("BoxShape3D_lejm0")
+
+[node name="Ceiling" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 27.8323, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ceiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.05503, -3.55735, -9.6933)
+shape = SubResource("BoxShape3D_ys4lo")
+
+[node name="Trees" type="Node3D" parent="."]
+
+[node name="Tree" parent="Trees" instance=ExtResource("4_ywse3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.4107, 0, 0)
+
+[node name="Tree2" parent="Trees" instance=ExtResource("4_ywse3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.57067, 0, -11.4602)
+
+[node name="Tree7" parent="Trees" instance=ExtResource("4_ywse3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.57067, 0, -31.6888)
+
+[node name="Tree17" parent="Trees" instance=ExtResource("4_ywse3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.44724, 0, -32.1653)
+
+[node name="Tree18" parent="Trees" instance=ExtResource("4_ywse3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.44724, 0, -21.7262)
+
+[node name="Tree19" parent="Trees" instance=ExtResource("4_ywse3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.16136, 0, -21.7262)
+
+[node name="Tree8" parent="Trees" instance=ExtResource("4_ywse3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.7418, 0, -24.0517)
+
+[node name="Tree20" parent="Trees" instance=ExtResource("4_ywse3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.7418, 0, -24.0517)
+
+[node name="Tree16" parent="Trees" instance=ExtResource("4_ywse3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0161, 0, -12.6107)
+
+[node name="Tree9" parent="Trees" instance=ExtResource("4_ywse3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.6568, 0, -24.0517)
+
+[node name="Tree10" parent="Trees" instance=ExtResource("4_ywse3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.6568, 0, -32.1495)
+
+[node name="Tree11" parent="Trees" instance=ExtResource("4_ywse3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.6568, 0, -32.1495)
+
+[node name="Tree3" parent="Trees" instance=ExtResource("4_ywse3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.9524, 0, 0)
+
+[node name="Tree12" parent="Trees" instance=ExtResource("4_ywse3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.2515, 0, 13.3518)
+
+[node name="Tree13" parent="Trees" instance=ExtResource("4_ywse3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.9425, 0, 13.3518)
+
+[node name="Tree14" parent="Trees" instance=ExtResource("4_ywse3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.9425, 0, 25.0261)
+
+[node name="Tree15" parent="Trees" instance=ExtResource("4_ywse3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.2604, 0, 25.0261)
+
+[node name="Tree4" parent="Trees" instance=ExtResource("4_ywse3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.6201, 0, 0)
+
+[node name="Tree5" parent="Trees" instance=ExtResource("4_ywse3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.7995, 0, -11.8462)
+
+[node name="Tree6" parent="Trees" instance=ExtResource("4_ywse3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.94305, 0, -11.8462)
+
+[node name="Tests" type="Node3D" parent="."]
+
+[node name="SpawnPoints" type="Node3D" parent="."]
+
+[node name="FishSpawnPoint" type="Marker3D" parent="SpawnPoints"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.765, -2.08997, 13.6685)
+
+[node name="FrogSpawnPoint" type="Marker3D" parent="SpawnPoints"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.891, 1.66735, -10.9917)
+
+[node name="BeeSpawnPoint" type="Marker3D" parent="SpawnPoints"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.46813, 4.23118, -31.6464)
+
+[node name="FPSCamera" parent="." instance=ExtResource("5_4ktki")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.8098, 1.85711, 0)
+current = true
+
+[node name="FollowingCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.48948, -5.64663)
+script = ExtResource("6_ihcgg")
+focus_time = 4

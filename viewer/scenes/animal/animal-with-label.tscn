@@ -1,0 +1,54 @@
+[gd_scene load_steps=8 format=3 uid="uid://dpxf4wf1x8rr6"]
+
+[ext_resource type="Script" path="res://scenes/animal/animal-with-label.gd" id="1_u2m0u"]
+[ext_resource type="PackedScene" uid="uid://cmnl3fov1kjvk" path="res://scenes/drawing/drawing-label.tscn" id="2_l7qbi"]
+[ext_resource type="Shader" path="res://scenes/drawing/drawing.gdshader" id="3_s4ujg"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_riqdt"]
+bounce = 0.84
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_p6mmp"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("3_s4ujg")
+shader_parameter/color_key = Color(1, 1, 1, 1)
+shader_parameter/tolerance = 0.3
+shader_parameter/crop_left = 0.28
+shader_parameter/crop_right = 0.27
+shader_parameter/crop_bottom = 0.79
+shader_parameter/crop_top = 0.11
+shader_parameter/wobblyness = 0.0
+
+[sub_resource type="QuadMesh" id="QuadMesh_e68fh"]
+resource_local_to_scene = true
+material = SubResource("ShaderMaterial_p6mmp")
+size = Vector2(1.5, 1)
+subdivide_width = 10
+subdivide_depth = 10
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_jeoj1"]
+size = Vector3(0.472595, 0.162476, 0.0568848)
+
+[node name="AnimalWithLabel" type="Node3D"]
+script = ExtResource("1_u2m0u")
+
+[node name="Label" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.140837, 0.682812, -0.00533867)
+collision_layer = 2
+collision_mask = 0
+mass = 0.1
+physics_material_override = SubResource("PhysicsMaterial_riqdt")
+gravity_scale = 0.0
+lock_rotation = true
+
+[node name="DrawingLabelMesh" parent="Label" instance=ExtResource("2_l7qbi")]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, -0.406311, 0)
+mesh = SubResource("QuadMesh_e68fh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Label"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00186157, -0.00408936, 0.000263214)
+shape = SubResource("BoxShape3D_jeoj1")
+
+[node name="PinJoint3D" type="PinJoint3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.134958, 0.401325, -0.0102854)
+node_a = NodePath("../Label")

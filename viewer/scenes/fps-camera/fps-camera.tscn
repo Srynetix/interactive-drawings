@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://duwvsvhvl6ddj"]
+
+[ext_resource type="Script" path="res://scenes/fps-camera/fps-camera.gd" id="1_ifom8"]
+
+[node name="FPSCamera" type="Camera3D"]
+script = ExtResource("1_ifom8")

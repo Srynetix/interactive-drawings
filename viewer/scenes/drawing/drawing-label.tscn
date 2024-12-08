@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=3 uid="uid://cmnl3fov1kjvk"]
+
+[ext_resource type="Shader" path="res://scenes/drawing/drawing.gdshader" id="1_e2sju"]
+[ext_resource type="Script" path="res://scenes/drawing/drawing-label.gd" id="2_h2bho"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_p6mmp"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("1_e2sju")
+shader_parameter/color_key = Color(1, 1, 1, 1)
+shader_parameter/tolerance = 0.3
+shader_parameter/crop_left = 0.28
+shader_parameter/crop_right = 0.27
+shader_parameter/crop_bottom = 0.79
+shader_parameter/crop_top = 0.11
+shader_parameter/wobblyness = 0.0
+
+[sub_resource type="QuadMesh" id="QuadMesh_agh8e"]
+resource_local_to_scene = true
+material = SubResource("ShaderMaterial_p6mmp")
+size = Vector2(1.5, 1)
+subdivide_width = 10
+subdivide_depth = 10
+
+[node name="DrawingLabelMesh" type="MeshInstance3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.406311, 0)
+mesh = SubResource("QuadMesh_agh8e")
+script = ExtResource("2_h2bho")

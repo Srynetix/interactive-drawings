@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3 uid="uid://bygslgemtdmf8"]
+
+[ext_resource type="Script" path="res://scenes/drawing/drawing-mesh.gd" id="1_5jpk0"]
+[ext_resource type="Shader" path="res://scenes/drawing/drawing.gdshader" id="1_p5xct"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hgdel"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("1_p5xct")
+shader_parameter/color_key = Color(1, 1, 1, 1)
+shader_parameter/tolerance = 0.3
+shader_parameter/crop_left = 0.05
+shader_parameter/crop_right = 0.05
+shader_parameter/crop_bottom = 0.1
+shader_parameter/crop_top = 0.25
+shader_parameter/wobblyness = null
+
+[sub_resource type="QuadMesh" id="QuadMesh_gbnsu"]
+resource_local_to_scene = true
+material = SubResource("ShaderMaterial_hgdel")
+size = Vector2(1.5, 1)
+subdivide_width = 10
+subdivide_depth = 10
+
+[node name="DrawingMesh" type="MeshInstance3D"]
+mesh = SubResource("QuadMesh_gbnsu")
+script = ExtResource("1_5jpk0")

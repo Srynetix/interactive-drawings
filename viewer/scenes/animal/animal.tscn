@@ -1,0 +1,40 @@
+[gd_scene load_steps=8 format=3 uid="uid://xp1jvcfc8v10"]
+
+[ext_resource type="Script" path="res://scenes/animal/animal.gd" id="1_p8nq1"]
+[ext_resource type="PackedScene" uid="uid://bygslgemtdmf8" path="res://scenes/drawing/drawing-mesh.tscn" id="2_44ycp"]
+[ext_resource type="Shader" path="res://scenes/drawing/drawing.gdshader" id="3_d6lif"]
+[ext_resource type="Texture2D" uid="uid://dionl3mhuvsm2" path="res://assets/textures/template-empty-512x288.png" id="4_y5kvt"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_oqxat"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("3_d6lif")
+shader_parameter/color_key = Color(1, 1, 1, 1)
+shader_parameter/tolerance = 0.0
+shader_parameter/crop_left = 0.0
+shader_parameter/crop_right = 0.0
+shader_parameter/crop_bottom = 0.0
+shader_parameter/crop_top = 0.0
+shader_parameter/wobblyness = null
+shader_parameter/draw_texture = ExtResource("4_y5kvt")
+
+[sub_resource type="QuadMesh" id="QuadMesh_qf40i"]
+resource_local_to_scene = true
+material = SubResource("ShaderMaterial_oqxat")
+size = Vector2(1.5, 1)
+subdivide_width = 10
+subdivide_depth = 10
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ekls7"]
+size = Vector3(1, 0.762817, 0.05)
+
+[node name="Animal" type="CharacterBody3D"]
+script = ExtResource("1_p8nq1")
+
+[node name="DrawingMesh" parent="." instance=ExtResource("2_44ycp")]
+mesh = SubResource("QuadMesh_qf40i")
+texture_image = ExtResource("4_y5kvt")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0722046, 0)
+shape = SubResource("BoxShape3D_ekls7")

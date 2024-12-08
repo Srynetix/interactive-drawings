@@ -1,0 +1,753 @@
+[gd_scene load_steps=12 format=3 uid="uid://bid2wqhpv46x3"]
+
+[ext_resource type="Script" path="res://scenes/main/main.gd" id="1_av13b"]
+[ext_resource type="PackedScene" uid="uid://rvj1r3cb5fn2" path="res://scenes/virtual-keyboard-space/virtual-keyboard-space.tscn" id="2_6i5np"]
+[ext_resource type="Texture2D" uid="uid://ixmuds21r4yq" path="res://assets/checkerboard.jpg" id="2_y00wm"]
+
+[sub_resource type="Theme" id="Theme_ngyfb"]
+default_font_size = 18
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nccwy"]
+bg_color = Color(0.393731, 0.272094, 0.578082, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k38en"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="Shader" id="Shader_eai5u"]
+code = "shader_type canvas_item;
+
+uniform vec4 color_key : source_color;
+uniform sampler2D draw_texture;
+uniform float tolerance : hint_range(0.0, 1.0, 0.01);
+uniform float crop_left : hint_range(0.0, 1.0, 0.01);
+uniform float crop_right : hint_range(0.0, 1.0, 0.01);
+uniform float crop_bottom : hint_range(0.0, 1.0, 0.01);
+uniform float crop_top : hint_range(0.0, 1.0, 0.01);
+uniform float wobblyness : hint_range(0.0, 1.0, 0.01);
+
+void fragment() {
+	vec4 col = texture(draw_texture, UV);
+	vec4 d4 = abs(col - color_key);
+	float d = max(max(d4.r, d4.g), d4.b);
+	if (d < tolerance) {
+		discard;
+	}
+
+	if (UV.x < crop_left || (1.0 - UV.x) < crop_right) {
+		discard;
+	}
+
+	if (UV.y < crop_top || (1.0 - UV.y) < crop_bottom) {
+		discard;
+	}
+
+	COLOR = col.rgba;
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mq4bd"]
+shader = SubResource("Shader_eai5u")
+shader_parameter/color_key = Color(1, 1, 1, 1)
+shader_parameter/tolerance = 0.0
+shader_parameter/crop_left = 0.0
+shader_parameter/crop_right = 0.0
+shader_parameter/crop_bottom = 0.0
+shader_parameter/crop_top = 0.0
+shader_parameter/wobblyness = null
+
+[sub_resource type="Shader" id="Shader_fsy2c"]
+code = "shader_type canvas_item;
+
+uniform vec4 color_key : source_color;
+uniform sampler2D draw_texture;
+uniform float tolerance : hint_range(0.0, 1.0, 0.01);
+uniform float crop_left : hint_range(0.0, 1.0, 0.01);
+uniform float crop_right : hint_range(0.0, 1.0, 0.01);
+uniform float crop_bottom : hint_range(0.0, 1.0, 0.01);
+uniform float crop_top : hint_range(0.0, 1.0, 0.01);
+uniform float wobblyness : hint_range(0.0, 1.0, 0.01);
+
+void fragment() {
+	vec4 col = texture(draw_texture, UV);
+	vec4 d4 = abs(col - color_key);
+	float d = max(max(d4.r, d4.g), d4.b);
+	if (d < tolerance) {
+		discard;
+	}
+
+	if (UV.x < crop_left || (1.0 - UV.x) < crop_right) {
+		discard;
+	}
+
+	if (UV.y < crop_top || (1.0 - UV.y) < crop_bottom) {
+		discard;
+	}
+
+	COLOR = col.rgba;
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vuk72"]
+shader = SubResource("Shader_fsy2c")
+shader_parameter/color_key = Color(1, 1, 1, 1)
+shader_parameter/tolerance = 0.0
+shader_parameter/crop_left = 0.0
+shader_parameter/crop_right = 0.0
+shader_parameter/crop_bottom = 0.0
+shader_parameter/crop_top = 0.0
+shader_parameter/wobblyness = null
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_iuvn8"]
+
+[node name="Home" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_ngyfb")
+script = ExtResource("1_av13b")
+
+[node name="Scroll" type="ScrollContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Panel" type="Panel" parent="Scroll/MarginContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_nccwy")
+
+[node name="Margin" type="MarginContainer" parent="Scroll/MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 0
+
+[node name="Items" type="VBoxContainer" parent="Scroll/MarginContainer/Margin"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Scroll/MarginContainer/Margin/Items"]
+layout_mode = 2
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Label" type="RichTextLabel" parent="Scroll/MarginContainer/Margin/Items/MarginContainer"]
+layout_mode = 2
+theme_override_font_sizes/normal_font_size = 34
+bbcode_enabled = true
+text = "[center][wave]Configurator[/wave][/center]"
+fit_content = true
+
+[node name="Tabs" type="TabContainer" parent="Scroll/MarginContainer/Margin/Items"]
+layout_mode = 2
+size_flags_vertical = 3
+current_tab = 0
+
+[node name="Scanner" type="MarginContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+metadata/_tab_index = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Preset" type="HBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Preset"]
+layout_mode = 2
+text = "Presets"
+
+[node name="PresetSelector" type="OptionButton" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Preset"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+selected = 0
+item_count = 4
+popup/item_0/text = "None"
+popup/item_1/text = "Fish"
+popup/item_1/id = 1
+popup/item_2/text = "Frog"
+popup/item_2/id = 2
+popup/item_3/text = "Bee"
+popup/item_3/id = 3
+
+[node name="Params" type="TabContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_k38en")
+current_tab = 0
+
+[node name="Image" type="MarginContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params"]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Image"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Image/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Background" type="TextureRect" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Image/VBoxContainer/MarginContainer"]
+layout_mode = 2
+texture = ExtResource("2_y00wm")
+expand_mode = 1
+
+[node name="Preview1" type="ColorRect" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Image/VBoxContainer/MarginContainer"]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_mq4bd")
+custom_minimum_size = Vector2(512, 288)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="MarginContainer2" type="MarginContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Image/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Image/VBoxContainer/MarginContainer2"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ToggleParameters" type="Button" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Image/VBoxContainer/MarginContainer2/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Image parameters"
+
+[node name="Parameters1" type="VBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Image/VBoxContainer/MarginContainer2/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Parameter5" type="HBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Image/VBoxContainer/MarginContainer2/VBoxContainer/Parameters1"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Image/VBoxContainer/MarginContainer2/VBoxContainer/Parameters1/Parameter5"]
+layout_mode = 2
+text = "Key"
+
+[node name="ColorKey" type="ColorPickerButton" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Image/VBoxContainer/MarginContainer2/VBoxContainer/Parameters1/Parameter5"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+color = Color(1, 1, 1, 1)
+
+[node name="Parameter" type="HBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Image/VBoxContainer/MarginContainer2/VBoxContainer/Parameters1"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Image/VBoxContainer/MarginContainer2/VBoxContainer/Parameters1/Parameter"]
+layout_mode = 2
+text = "Tolerance"
+
+[node name="Tolerance" type="HSlider" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Image/VBoxContainer/MarginContainer2/VBoxContainer/Parameters1/Parameter"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+
+[node name="Parameter2" type="HBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Image/VBoxContainer/MarginContainer2/VBoxContainer/Parameters1"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Label2" type="Label" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Image/VBoxContainer/MarginContainer2/VBoxContainer/Parameters1/Parameter2"]
+layout_mode = 2
+text = "Crop Left"
+
+[node name="CropLeft" type="HSlider" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Image/VBoxContainer/MarginContainer2/VBoxContainer/Parameters1/Parameter2"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+
+[node name="Parameter3" type="HBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Image/VBoxContainer/MarginContainer2/VBoxContainer/Parameters1"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Image/VBoxContainer/MarginContainer2/VBoxContainer/Parameters1/Parameter3"]
+layout_mode = 2
+text = "Crop Right"
+
+[node name="CropRight" type="HSlider" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Image/VBoxContainer/MarginContainer2/VBoxContainer/Parameters1/Parameter3"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+
+[node name="Parameter4" type="HBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Image/VBoxContainer/MarginContainer2/VBoxContainer/Parameters1"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Image/VBoxContainer/MarginContainer2/VBoxContainer/Parameters1/Parameter4"]
+layout_mode = 2
+text = "Crop Bottom"
+
+[node name="CropBottom" type="HSlider" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Image/VBoxContainer/MarginContainer2/VBoxContainer/Parameters1/Parameter4"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Image/VBoxContainer/MarginContainer2/VBoxContainer/Parameters1"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Image/VBoxContainer/MarginContainer2/VBoxContainer/Parameters1/HBoxContainer"]
+layout_mode = 2
+text = "Crop Top"
+
+[node name="CropTop" type="HSlider" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Image/VBoxContainer/MarginContainer2/VBoxContainer/Parameters1/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+
+[node name="Label" type="MarginContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Label"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Label/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Background" type="TextureRect" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Label/VBoxContainer/MarginContainer"]
+layout_mode = 2
+texture = ExtResource("2_y00wm")
+expand_mode = 1
+
+[node name="Preview2" type="ColorRect" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Label/VBoxContainer/MarginContainer"]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_vuk72")
+custom_minimum_size = Vector2(512, 288)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="MarginContainer2" type="MarginContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Label/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Label/VBoxContainer/MarginContainer2"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ToggleParameters2" type="Button" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Label/VBoxContainer/MarginContainer2/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Label parameters"
+
+[node name="Parameters2" type="VBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Label/VBoxContainer/MarginContainer2/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Parameter5" type="HBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Label/VBoxContainer/MarginContainer2/VBoxContainer/Parameters2"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Label/VBoxContainer/MarginContainer2/VBoxContainer/Parameters2/Parameter5"]
+layout_mode = 2
+text = "Key"
+
+[node name="ColorKey2" type="ColorPickerButton" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Label/VBoxContainer/MarginContainer2/VBoxContainer/Parameters2/Parameter5"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+color = Color(1, 1, 1, 1)
+
+[node name="Parameter" type="HBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Label/VBoxContainer/MarginContainer2/VBoxContainer/Parameters2"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Label/VBoxContainer/MarginContainer2/VBoxContainer/Parameters2/Parameter"]
+layout_mode = 2
+text = "Tolerance"
+
+[node name="Tolerance2" type="HSlider" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Label/VBoxContainer/MarginContainer2/VBoxContainer/Parameters2/Parameter"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+
+[node name="Parameter2" type="HBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Label/VBoxContainer/MarginContainer2/VBoxContainer/Parameters2"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Label2" type="Label" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Label/VBoxContainer/MarginContainer2/VBoxContainer/Parameters2/Parameter2"]
+layout_mode = 2
+text = "Crop Left"
+
+[node name="CropLeft2" type="HSlider" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Label/VBoxContainer/MarginContainer2/VBoxContainer/Parameters2/Parameter2"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+
+[node name="Parameter3" type="HBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Label/VBoxContainer/MarginContainer2/VBoxContainer/Parameters2"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Label/VBoxContainer/MarginContainer2/VBoxContainer/Parameters2/Parameter3"]
+layout_mode = 2
+text = "Crop Right"
+
+[node name="CropRight2" type="HSlider" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Label/VBoxContainer/MarginContainer2/VBoxContainer/Parameters2/Parameter3"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+
+[node name="Parameter4" type="HBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Label/VBoxContainer/MarginContainer2/VBoxContainer/Parameters2"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Label/VBoxContainer/MarginContainer2/VBoxContainer/Parameters2/Parameter4"]
+layout_mode = 2
+text = "Crop Bottom"
+
+[node name="CropBottom2" type="HSlider" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Label/VBoxContainer/MarginContainer2/VBoxContainer/Parameters2/Parameter4"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Label/VBoxContainer/MarginContainer2/VBoxContainer/Parameters2"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Label/VBoxContainer/MarginContainer2/VBoxContainer/Parameters2/HBoxContainer"]
+layout_mode = 2
+text = "Crop Top"
+
+[node name="CropTop2" type="HSlider" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/Params/Label/VBoxContainer/MarginContainer2/VBoxContainer/Parameters2/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+
+[node name="MarginContainer3" type="MarginContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="BottomItems" type="VBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/MarginContainer3"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="NameSection" type="HBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/MarginContainer3/BottomItems"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/MarginContainer3/BottomItems/NameSection"]
+layout_mode = 2
+text = "Drawing name"
+
+[node name="DrawingName" type="LineEdit" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/MarginContainer3/BottomItems/NameSection"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "untitled"
+
+[node name="AnimalSelector" type="HBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/MarginContainer3/BottomItems"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/MarginContainer3/BottomItems/AnimalSelector"]
+layout_mode = 2
+text = "Animal"
+
+[node name="FishKind" type="CheckBox" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/MarginContainer3/BottomItems/AnimalSelector"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 10
+button_pressed = true
+button_group = SubResource("ButtonGroup_iuvn8")
+text = "Fish"
+
+[node name="FrogKind" type="CheckBox" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/MarginContainer3/BottomItems/AnimalSelector"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+button_group = SubResource("ButtonGroup_iuvn8")
+text = "Frog"
+
+[node name="BeeKind" type="CheckBox" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/MarginContainer3/BottomItems/AnimalSelector"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+button_group = SubResource("ButtonGroup_iuvn8")
+text = "Bee"
+
+[node name="PickButton" type="Button" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/MarginContainer3/BottomItems"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Pick picture"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/MarginContainer3/BottomItems"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="LocalStoreButton" type="Button" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/MarginContainer3/BottomItems/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Store locally"
+
+[node name="SendButton" type="Button" parent="Scroll/MarginContainer/Margin/Items/Tabs/Scanner/VBoxContainer/MarginContainer3/BottomItems/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Send to server"
+
+[node name="Remote" type="MarginContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs"]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+metadata/_tab_index = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Remote"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="RefreshRemoteDrawings" type="Button" parent="Scroll/MarginContainer/Margin/Items/Tabs/Remote/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Refresh"
+
+[node name="RemoteDrawingLineTemplate" type="HBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Remote/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="DrawingNameLabel" type="Label" parent="Scroll/MarginContainer/Margin/Items/Tabs/Remote/VBoxContainer/RemoteDrawingLineTemplate"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "{DrawingName}"
+
+[node name="DrawingLoadButton" type="Button" parent="Scroll/MarginContainer/Margin/Items/Tabs/Remote/VBoxContainer/RemoteDrawingLineTemplate"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Load"
+
+[node name="DrawingFocusButton" type="Button" parent="Scroll/MarginContainer/Margin/Items/Tabs/Remote/VBoxContainer/RemoteDrawingLineTemplate"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Focus"
+
+[node name="DrawingDeleteButton" type="Button" parent="Scroll/MarginContainer/Margin/Items/Tabs/Remote/VBoxContainer/RemoteDrawingLineTemplate"]
+layout_mode = 2
+text = "Delete"
+
+[node name="Local" type="MarginContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs"]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+metadata/_tab_index = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Local"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="LocalDrawingLineTemplate" type="HBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Local/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="DrawingNameLabel" type="Label" parent="Scroll/MarginContainer/Margin/Items/Tabs/Local/VBoxContainer/LocalDrawingLineTemplate"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "{DrawingName}"
+
+[node name="DrawingLoadButton" type="Button" parent="Scroll/MarginContainer/Margin/Items/Tabs/Local/VBoxContainer/LocalDrawingLineTemplate"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Load"
+
+[node name="DrawingDeleteButton" type="Button" parent="Scroll/MarginContainer/Margin/Items/Tabs/Local/VBoxContainer/LocalDrawingLineTemplate"]
+layout_mode = 2
+text = "Delete"
+
+[node name="Config" type="MarginContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs"]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+metadata/_tab_index = 3
+
+[node name="Fields" type="VBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Config"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Config/Fields"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Scroll/MarginContainer/Margin/Items/Tabs/Config/Fields/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Camera focus time"
+
+[node name="CameraFocusTime" type="SpinBox" parent="Scroll/MarginContainer/Margin/Items/Tabs/Config/Fields/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 1000.0
+value = 5.0
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Config/Fields"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Scroll/MarginContainer/Margin/Items/Tabs/Config/Fields/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Camera Z distance"
+
+[node name="CameraZDistance" type="SpinBox" parent="Scroll/MarginContainer/Margin/Items/Tabs/Config/Fields/HBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = -10.0
+max_value = 10.0
+step = 0.1
+value = 4.0
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Config/Fields"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Scroll/MarginContainer/Margin/Items/Tabs/Config/Fields/HBoxContainer3"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Camera Y distance"
+
+[node name="CameraYDistance" type="SpinBox" parent="Scroll/MarginContainer/Margin/Items/Tabs/Config/Fields/HBoxContainer3"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = -10.0
+max_value = 10.0
+step = 0.1
+value = 1.0
+
+[node name="Buttons" type="HBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Tabs/Config/Fields"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="PullConfig" type="Button" parent="Scroll/MarginContainer/Margin/Items/Tabs/Config/Fields/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Pull configuration"
+
+[node name="PushConfig" type="Button" parent="Scroll/MarginContainer/Margin/Items/Tabs/Config/Fields/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Push configuration"
+
+[node name="Server" type="MarginContainer" parent="Scroll/MarginContainer/Margin/Items"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Server"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="ServerSection" type="HBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Server/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="Scroll/MarginContainer/Margin/Items/Server/VBoxContainer/ServerSection"]
+layout_mode = 2
+text = "Server address"
+
+[node name="ServerAddress" type="LineEdit" parent="Scroll/MarginContainer/Margin/Items/Server/VBoxContainer/ServerSection"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "localhost:8123"
+
+[node name="ConnectButton" type="Button" parent="Scroll/MarginContainer/Margin/Items/Server/VBoxContainer/ServerSection"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Connect"
+
+[node name="ConnectSection" type="HBoxContainer" parent="Scroll/MarginContainer/Margin/Items/Server/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="ConnectLabel" type="Label" parent="Scroll/MarginContainer/Margin/Items/Server/VBoxContainer/ConnectSection"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_alignment = 1
+
+[node name="VirtualKeyboardSpace" parent="Scroll/MarginContainer/Margin/Items" instance=ExtResource("2_6i5np")]
+layout_mode = 2
+
+[node name="FileDialog" type="FileDialog" parent="."]
+unique_name_in_owner = true
+title = "Open a File"
+size = Vector2i(378, 239)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
